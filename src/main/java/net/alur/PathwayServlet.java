@@ -16,11 +16,11 @@ import com.google.gson.Gson;
 /**
  * Servlet implementation class PathwayServlet
  */
-@WebServlet(name="PathwayServlet", urlPatterns = {"/PathwayServlet"})
+@WebServlet(name = "PathwayServlet", urlPatterns = { "/PathwayServlet" })
 public class PathwayServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	private static final IPathwayComputer ipc = new PathwayComputer();
-       
+    private static final long serialVersionUID = 1L;
+    private static final IPathwayComputer ipc = new PathwayComputer();
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -31,45 +31,48 @@ public class PathwayServlet extends HttpServlet {
 
     @SuppressWarnings("unused")
     private class PathMetadata {
-		Map<Integer, String> path;
-    	int                  pathlength;
-    	int                  numpaths;
+        Map<Integer, String> path;
+        int pathlength;
+        int numpaths;
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String from = request.getParameter("from");
-		String to   = request.getParameter("to");
-		
-		try {
-			Gson jsonHelper = new Gson();
-			List<BoardSquare> path = ipc.computePathway(new BoardSquare(from), new BoardSquare(to));
-			Map<Integer, String> pathSimplified = new HashMap<>();
-			int i = 0;
-			for (BoardSquare square : path) {
-				pathSimplified.put(++i, "" + square.getLetter() + square.getNumber());
-			}
-		
-			PathMetadata pathinfo = new PathMetadata();
-			pathinfo.path         = pathSimplified;
-			pathinfo.pathlength   = pathSimplified.size();
-			pathinfo.numpaths     = NumPathsMatrix.getNumPaths(pathinfo.pathlength-1, from, to);
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+     *      response)
+     */
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String from = request.getParameter("from");
+        String to = request.getParameter("to");
 
-			response.getWriter().append(jsonHelper.toJson(pathinfo));
-		} catch (Exception e) {
-			log("from " + from + " to " + to, e);
-			response.getWriter().append("{}");
-		}
-	}
+        try {
+            Gson jsonHelper = new Gson();
+            List<BoardSquare> path = ipc.computePathway(new BoardSquare(from), new BoardSquare(to));
+            Map<Integer, String> pathSimplified = new HashMap<>();
+            int i = 0;
+            for (BoardSquare square : path) {
+                pathSimplified.put(++i, "" + square.getLetter() + square.getNumber());
+            }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+            PathMetadata pathinfo = new PathMetadata();
+            pathinfo.path = pathSimplified;
+            pathinfo.pathlength = pathSimplified.size();
+            pathinfo.numpaths = NumPathsMatrix.getNumPaths(pathinfo.pathlength - 1, from, to);
 
+            response.getWriter().append(jsonHelper.toJson(pathinfo));
+        } catch (Exception e) {
+            log("from " + from + " to " + to, e);
+            response.getWriter().append("{}");
+        }
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+     *      response)
+     */
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // TODO Auto-generated method stub
+        doGet(request, response);
+    }
 }
