@@ -1,0 +1,210 @@
+<html>
+<style>
+td {
+	width: 40px;
+	height: 40px;
+	border: 1px solid;
+}
+td:hover {
+	cursor: pointer;
+}
+</style>
+<script src="jquery-3.3.1.js">
+	
+</script>
+<script>
+	var squareDelay = 300;
+    var first = undefined;
+	$(document).ready(function() {
+		function clearBoard() {
+			$('td').css("background-color","white");
+			$('#clearbutton').css('visibility', 'hidden');
+			$("#numpaths").val('');
+			$("#pathlength").val('');
+		}
+		
+		$('#clearbutton').click(function() {
+			clearBoard();
+		});
+		
+		$('td').click(function() {
+			var squareName = arguments[0].currentTarget.id;	
+			if (typeof first === 'undefined') {
+				first = squareName;
+				clearBoard();
+				$(arguments[0].currentTarget).css("background-color","yellow");
+			} else {
+				$(arguments[0].currentTarget).addClass("check");
+				$.ajax({
+					url: "PathwayServlet?from=" + first + "&to=" + squareName,
+					dataType: "json"
+				}).done(function(result) {
+
+					$("#numpaths").val(result['numpaths']);
+					var pathlength = result['pathlength'];
+					$("#pathlength").val(pathlength - 1);
+
+					result = result['path'];
+					
+					
+					$.each(result, function(a){
+						setTimeout(function(){
+							$("#"+result[a]).css("background-color","navy");
+							$("#"+result[a]).removeClass("check");
+						},(pathlength-a)*squareDelay);
+					});
+					
+					setTimeout(function(){
+						$('#clearbutton').css('visibility', 'visible');
+					}, pathlength*squareDelay);
+				});
+				first = undefined;
+			}
+		});
+	});
+</script>
+<style>
+.check {
+	background-image:
+      linear-gradient(45deg, #000 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #000 75%),
+      linear-gradient(45deg, transparent 75%, #000 75%),
+      linear-gradient(45deg, #000 25%, transparent 25%);
+
+    background-size:20px 20px;   
+    
+    background-position:0 0, 0 0, -10px -10px, 10px 10px;
+}
+
+#descriptions {
+	padding-top: 25px;
+	padding-left: 15px;
+	padding-bottom: 5px;
+}
+
+#pathcount {
+	padding-left: 15px;
+}
+
+#clearbutton {
+	visibility: hidden;	
+}
+</style>
+<body>
+	<div id = "descriptions">
+		<h2><i>Knight Moves</i></h2>
+		<h3><i>Choose any two squares</i></h3>
+	</div>
+	
+	<table>
+		<tr>
+			<th>H</th>
+			<td id="H1"></td>
+			<td id="H2"></td>
+			<td id="H3"></td>
+			<td id="H4"></td>
+			<td id="H5"></td>
+			<td id="H6"></td>
+			<td id="H7"></td>
+			<td id="H8"></td>
+		</tr>
+		<tr>
+			<th>G</th>
+			<td id="G1"></td>
+			<td id="G2"></td>
+			<td id="G3"></td>
+			<td id="G4"></td>
+			<td id="G5"></td>
+			<td id="G6"></td>
+			<td id="G7"></td>
+			<td id="G8"></td>
+		</tr>
+		<tr>
+			<th>F</th>
+			<td id="F1"></td>
+			<td id="F2"></td>
+			<td id="F3"></td>
+			<td id="F4"></td>
+			<td id="F5"></td>
+			<td id="F6"></td>
+			<td id="F7"></td>
+			<td id="F8"></td>
+		</tr>
+		<tr>
+			<th>E</th>
+			<td id="E1"></td>
+			<td id="E2"></td>
+			<td id="E3"></td>
+			<td id="E4"></td>
+			<td id="E5"></td>
+			<td id="E6"></td>
+			<td id="E7"></td>
+			<td id="E8"></td>
+		</tr>
+		<tr>
+			<th>D</th>
+			<td id="D1"></td>
+			<td id="D2"></td>
+			<td id="D3"></td>
+			<td id="D4"></td>
+			<td id="D5"></td>
+			<td id="D6"></td>
+			<td id="D7"></td>
+			<td id="D8"></td>
+		</tr>
+		<tr>
+			<th>C</th>
+			<td id="C1"></td>
+			<td id="C2"></td>
+			<td id="C3"></td>
+			<td id="C4"></td>
+			<td id="C5"></td>
+			<td id="C6"></td>
+			<td id="C7"></td>
+			<td id="C8"></td>
+		</tr>
+		<tr>
+			<th>B</th>
+			<td id="B1"></td>
+			<td id="B2"></td>
+			<td id="B3"></td>
+			<td id="B4"></td>
+			<td id="B5"></td>
+			<td id="B6"></td>
+			<td id="B7"></td>
+			<td id="B8"></td>
+		</tr>
+		<tr>
+			<th>A</th>
+			<td id="A1"></td>
+			<td id="A2"></td>
+			<td id="A3"></td>
+			<td id="A4"></td>
+			<td id="A5"></td>
+			<td id="A6"></td>
+			<td id="A7"></td>
+			<td id="A8"></td>
+		</tr>
+		<tr>
+			<td style="border: 0px"></td>
+			<th>1</th>
+			<th>2</th>
+			<th>3</th>
+			<th>4</th>
+			<th>5</th>
+			<th>6</th>
+			<th>7</th>
+			<th>8</th>
+			<th id = "clearbutton"><a href="#">Clear the board</a></th>
+		</tr>
+	</table>
+	
+	<div id = "pathcount">
+		<h3>There are 
+		<input id="numpaths" type = "text" size="5" readonly="readonly"></input> 
+		path(s) of distance
+		<input id="pathlength" type = "text" size="5" readonly="readonly"></input> 
+		between these two squares</h3>
+	</div>
+</body>
+</html>
