@@ -1,6 +1,8 @@
 package net.alur;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -12,8 +14,9 @@ import java.util.Set;
 public class BoardSquare {
     private char letter;
     private int number;
+    private static Map<String, BoardSquare> squareCache = new HashMap<>();
 
-    public BoardSquare(String loc) throws IndexOutOfBoundsException {
+    private BoardSquare(String loc) throws IndexOutOfBoundsException {
         this.letter = loc.charAt(0);
         this.number = Integer.valueOf(loc.substring(1));
 
@@ -26,8 +29,12 @@ public class BoardSquare {
         }
     }
 
-    public BoardSquare(char i, int j) throws IndexOutOfBoundsException {
-        this("" + i + j);
+    public static BoardSquare at(String loc) {
+        return squareCache.computeIfAbsent(loc, key -> new BoardSquare(key));
+    }
+
+    public static BoardSquare at(char i, int j) {
+        return at("" + i + j);
     }
 
     public char getLetter() {
@@ -83,7 +90,7 @@ public class BoardSquare {
 
     private BoardSquare getSquareFromOffset(int x, int y) {
         try {
-            return new BoardSquare((char) ((int) letter + x), number + y);
+            return at((char) ((int) letter + x), number + y);
         } catch (IndexOutOfBoundsException e) {
             return null;
         }
@@ -102,5 +109,10 @@ public class BoardSquare {
         }
 
         return validKnightMoves;
+    }
+
+    public boolean reachableByKnight(BoardSquare dest) {
+        int[] diff = { dest.letter - letter, dest.number - number };
+        return 2 == Math.abs(diff[0]) * Math.abs(diff[1]);
     }
 }

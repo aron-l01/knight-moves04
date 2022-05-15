@@ -18,7 +18,7 @@ public class NumPathsMatrix {
             List<BoardSquare> computedSquares = new ArrayList<>();
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
-                    computedSquares.add(new BoardSquare((char) ((int) 'A' + i), 1 + j));
+                    computedSquares.add(BoardSquare.at((char) ((int) 'A' + i), 1 + j));
                 }
             }
             squaresList = computedSquares.toArray(new BoardSquare[0]);
@@ -37,10 +37,16 @@ public class NumPathsMatrix {
             for (BoardSquare from : getSquaresList()) {
                 int j = 0;
                 for (BoardSquare to : getSquaresList()) {
-                    if (from.knightMoves().contains(to)) {
+                    if (i > j) {
+                        j++;
+                        continue;
+                    }
+                    if (from.reachableByKnight(to)) {
                         computedMatrix[i][j] = 1d;
+                        computedMatrix[j][i] = 1d;
                     } else {
                         computedMatrix[i][j] = 0d;
+                        computedMatrix[j][i] = 0d;
                     }
                     j++;
                 }
@@ -64,6 +70,6 @@ public class NumPathsMatrix {
     }
 
     public static int getNumPaths(int pathsLength, String from, String to) {
-        return getNumPaths(pathsLength, new BoardSquare(from), new BoardSquare(to));
+        return getNumPaths(pathsLength, BoardSquare.at(from), BoardSquare.at(to));
     }
 }

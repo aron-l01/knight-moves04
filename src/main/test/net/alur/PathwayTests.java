@@ -19,7 +19,7 @@ class PathwayTests {
 
     @Test
     void testPathwayComputer1() throws Exception {
-        List<BoardSquare> pathway = ipc.computePathway(new BoardSquare("A1"), new BoardSquare("C2"));
+        List<BoardSquare> pathway = ipc.computePathway(BoardSquare.at("A1"), BoardSquare.at("C2"));
         assertEquals(2, pathway.size());
     }
 
@@ -31,19 +31,18 @@ class PathwayTests {
 
     @Test
     void testPathwayComputer2() throws Exception {
-        List<BoardSquare> pathway = ipc.computePathway(new BoardSquare("C3"), new BoardSquare("D4"));
+        List<BoardSquare> pathway = ipc.computePathway(BoardSquare.at("C3"), BoardSquare.at("D4"));
         assertEquals(3, pathway.size());
     }
 
     @Test
     void testPathwayComputer3() throws Exception {
-        assertThrows(IllegalStateException.class,
-                () -> ipc.computePathway(new BoardSquare("A1"), new BoardSquare("A1")));
+        assertThrows(IllegalStateException.class, () -> ipc.computePathway(BoardSquare.at("A1"), BoardSquare.at("A1")));
     }
 
     @Test
     void testCorners() throws Exception {
-        List<BoardSquare> pathway = ipc.computePathway(new BoardSquare("A1"), new BoardSquare("H8"));
+        List<BoardSquare> pathway = ipc.computePathway(BoardSquare.at("A1"), BoardSquare.at("H8"));
         for (int i = 0; i < pathway.size() - 1; i++) {
             List<BoardSquare> pair = pathway.subList(i, i + 2);
             assertTrue(pair.get(0).knightMoves().contains(pair.get(1)));
@@ -52,6 +51,6 @@ class PathwayTests {
 
     @Test
     void testBoardLimits() {
-        assertThrows(IndexOutOfBoundsException.class, () -> new BoardSquare("I9"));
+        assertThrows(IndexOutOfBoundsException.class, () -> BoardSquare.at("I9"));
     }
 }

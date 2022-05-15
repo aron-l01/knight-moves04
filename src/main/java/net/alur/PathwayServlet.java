@@ -47,11 +47,11 @@ public class PathwayServlet extends HttpServlet {
 
         try {
             Gson jsonHelper = new Gson();
-            List<BoardSquare> path = ipc.computePathway(new BoardSquare(from), new BoardSquare(to));
+            List<BoardSquare> path = ipc.computePathway(BoardSquare.at(from), BoardSquare.at(to));
             Map<Integer, String> pathSimplified = new HashMap<>();
             int i = 0;
             for (BoardSquare square : path) {
-                pathSimplified.put(++i, "" + square.getLetter() + square.getNumber());
+                pathSimplified.put(++i, square.shorthand());
             }
 
             PathMetadata pathinfo = new PathMetadata();
