@@ -1,9 +1,10 @@
 package net.alur;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.collect.Streams;
 import com.google.gson.Gson;
 
 /**
@@ -48,15 +50,14 @@ public class PathwayServlet extends HttpServlet {
         try {
             Gson jsonHelper = new Gson();
             List<BoardSquare> path = ipc.computePathway(BoardSquare.at(from), BoardSquare.at(to));
-            Map<Integer, String> pathSimplified = new HashMap<>();
-            int i = 0;
-            for (BoardSquare square : path) {
-                pathSimplified.put(++i, square.shorthand());
-            }
+            Map<Integer, String> pathForJson = Streams
+                    .zip(IntStream.range(1, path.size() + 1).mapToObj(i -> Integer.valueOf(i)), path.stream(),
+                            (j, sq) -> Map.entry(j, sq.shorthand()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
             PathMetadata pathinfo = new PathMetadata();
-            pathinfo.path = pathSimplified;
-            pathinfo.pathlength = pathSimplified.size();
+            pathinfo.path = pathForJson;
+            pathinfo.pathlength = pathForJson.size();
             pathinfo.numpaths = NumPathsMatrix.getNumPaths(pathinfo.pathlength - 1, from, to);
 
             response.getWriter().append(jsonHelper.toJson(pathinfo));

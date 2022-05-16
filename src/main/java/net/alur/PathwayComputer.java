@@ -14,6 +14,9 @@ public class PathwayComputer implements IPathwayComputer {
 
     @Override
     public List<BoardSquare> computePathway(BoardSquare start, BoardSquare destination) throws IllegalStateException {
+        if (start.equals(destination)) {
+            throw new IllegalStateException("Cannot compute a path of length zero");
+        }
 
         // Breadth-first search
         Map<BoardSquare, BoardSquare> breadcrumbs = new HashMap<>();
@@ -26,7 +29,7 @@ public class PathwayComputer implements IPathwayComputer {
             BoardSquare currentSquare = toInspect.poll();
             visited.add(currentSquare);
 
-            Set<BoardSquare> possibleMoves = getPossibleMoves(currentSquare);
+            Set<BoardSquare> possibleMoves = currentSquare.knightMoves();
             possibleMoves.removeAll(visited);
             for (BoardSquare possibleMove : possibleMoves) {
                 toInspect.add(possibleMove);
@@ -52,11 +55,5 @@ public class PathwayComputer implements IPathwayComputer {
         }
 
         return foundPath;
-    }
-
-    // If we wanted to adjust this algorithm to use e.g. a queen instead of a
-    // knight, we could alter this function
-    private Set<BoardSquare> getPossibleMoves(BoardSquare currentSquare) {
-        return currentSquare.knightMoves();
     }
 }

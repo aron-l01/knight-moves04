@@ -1,5 +1,6 @@
 package net.alur;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class BoardSquare {
     private char letter;
     private int number;
     private static Map<String, BoardSquare> squareCache = new HashMap<>();
+    private static Map<String, Set<BoardSquare>> movesCache = new HashMap<>();
 
     private BoardSquare(String loc) throws IndexOutOfBoundsException {
         this.letter = loc.charAt(0);
@@ -29,11 +31,12 @@ public class BoardSquare {
         }
     }
 
-    public static BoardSquare at(String loc) {
-        return squareCache.computeIfAbsent(loc, key -> new BoardSquare(key));
+    public static BoardSquare at(String loc) throws IndexOutOfBoundsException {
+        squareCache.putIfAbsent(loc, new BoardSquare(loc));
+        return squareCache.get(loc);
     }
 
-    public static BoardSquare at(char i, int j) {
+    public static BoardSquare at(char i, int j) throws IndexOutOfBoundsException {
         return at("" + i + j);
     }
 
@@ -100,15 +103,11 @@ public class BoardSquare {
             { -1, -2 } };
 
     public Set<BoardSquare> knightMoves() {
-        Set<BoardSquare> validKnightMoves = new HashSet<>();
-
-        for (int[] offset : knightOffsets) {
-            BoardSquare hop = getSquareFromOffset(offset[0], offset[1]);
-            if (hop != null)
-                validKnightMoves.add(hop);
-        }
-
-        return validKnightMoves;
+        movesCache.computeIfAbsent(this.shorthand(), str -> {
+            return new HashSet<>(Arrays.stream(knightOffsets).map(offset -> getSquareFromOffset(offset[0], offset[1]))
+                    .filter(sq -> sq != null).toList());
+        });
+        return new HashSet<>(movesCache.get(this.shorthand()));
     }
 
     public boolean reachableByKnight(BoardSquare dest) {

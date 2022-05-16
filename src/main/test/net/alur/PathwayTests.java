@@ -45,7 +45,7 @@ class PathwayTests {
         List<BoardSquare> pathway = ipc.computePathway(BoardSquare.at("A1"), BoardSquare.at("H8"));
         for (int i = 0; i < pathway.size() - 1; i++) {
             List<BoardSquare> pair = pathway.subList(i, i + 2);
-            assertTrue(pair.get(0).knightMoves().contains(pair.get(1)));
+            assertTrue(pair.get(0).reachableByKnight(pair.get(1)));
         }
     }
 
